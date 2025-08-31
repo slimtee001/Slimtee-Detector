@@ -1,0 +1,5 @@
+{
+  "name": "Copy of Veritas: AI News Analyzer",
+  "description": "An advanced fake news detection system that leverages Natural Language Processing (NLP) and the Gemini API to analyze news articles for authenticity. Paste an article, and the AI will provide a verdict on its likelihood of being real or fake, along with a confidence score and a detailed explanation of the key indicators found in the text.",
+  "requestFramePermissions": []
+}
