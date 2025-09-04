@@ -1,10 +1,9 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult } from '../types';
 
-// WARNING: Hardcoding API keys is insecure and not recommended.
-// This is for local debugging ONLY. Use environment variables for any real application.
-// Anyone who can view your website's source code can steal this key.
-const API_KEY = "AIzaSyBmzznd0kTTY7exmVNEJrSuNkjEDyQM6V8";
+// API key is securely accessed from environment variables.
+const API_KEY = process.env.API_KEY as string;
 
 const ai = new GoogleGenAI({ apiKey: API_KEY });
 

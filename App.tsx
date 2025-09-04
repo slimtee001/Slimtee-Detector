@@ -64,7 +64,7 @@ const App: React.FC = () => {
         </div>
       </main>
       <footer className="text-center py-4 text-slate-600 text-sm">
-        <p>Powered by Gemini AI. For educational purposes only; always verify from multiple sources.</p>
+        <p></p>
       </footer>
     </div>
   );
