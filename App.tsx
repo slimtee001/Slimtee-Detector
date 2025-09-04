@@ -29,7 +29,11 @@ const App: React.FC = () => {
       setAnalysisResult(result);
     } catch (e) {
       console.error(e);
-      setError("An error occurred during analysis. The content might be blocked or the API may be unavailable. Please try again.");
+      if (e instanceof Error) {
+        setError(e.message);
+      } else {
+        setError("An unknown error occurred during analysis. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
