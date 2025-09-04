@@ -1,6 +1,10 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult } from '../types';
+
+// According to the coding guidelines, the API key is expected to be available
+// in the process.env.API_KEY environment variable. The execution environment
+// is responsible for providing this.
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const analysisSchema = {
     type: Type.OBJECT,
@@ -29,28 +33,8 @@ const analysisSchema = {
     required: ['verdict', 'confidenceScore', 'explanation', 'keyIndicators']
 };
 
-function getApiKey(): string {
-    let apiKey: string | undefined;
-    // This defensive check is necessary for browser environments
-    // where 'process' may not be defined.
-    if (typeof process !== 'undefined' && process.env) {
-        apiKey = process.env.API_KEY;
-    }
-
-    if (!apiKey) {
-        // This error will be displayed in the UI.
-        throw new Error("Configuration Error: The API_KEY environment variable is not set or accessible. Please ensure it is configured correctly.");
-    }
-    return apiKey;
-}
-
 export async function analyzeNewsArticle(articleText: string): Promise<AnalysisResult> {
     try {
-        // Get key and initialize AI client here to prevent app crash on load
-        // if the environment variable is missing.
-        const apiKey = getApiKey();
-        const ai = new GoogleGenAI({ apiKey });
-
         const prompt = `Analyze the following news article for signs of being fake news or misinformation. Evaluate it based on factors like emotional language, sensationalism, lack of sources, unverifiable claims, and overall tone. Provide a structured analysis based on the schema.
         
         ARTICLE TEXT:
@@ -78,15 +62,8 @@ export async function analyzeNewsArticle(articleText: string): Promise<AnalysisR
         return parsedResult;
 
     } catch (error) {
-        if (error instanceof Error) {
-            // Forward config errors to the UI
-            if (error.message.startsWith("Configuration Error")) {
-                throw error;
-            }
-        }
-        
         console.error("Error calling Gemini API:", error);
-        // Provide a more user-friendly error for other API issues.
+        // Provide a more user-friendly error for API issues.
         throw new Error("Analysis failed. The content might be blocked, the API may be unavailable, or there was an internal error. Please check the console and try again.");
     }
 }
