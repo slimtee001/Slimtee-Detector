@@ -1,11 +1,11 @@
 
 import React, { useState, useCallback } from 'react';
-import { Header } from './components/Header';
-import { NewsInput } from './components/NewsInput';
-import { AnalysisResultDisplay } from './components/AnalysisResultDisplay';
-import { LoadingSpinner } from './components/LoadingSpinner';
-import { analyzeNewsArticle } from './services/geminiService';
-import { AnalysisResult } from './types';
+import { Header } from './components/Header.tsx';
+import { NewsInput } from './components/NewsInput.tsx';
+import { AnalysisResultDisplay } from './components/AnalysisResultDisplay.tsx';
+import { LoadingSpinner } from './components/LoadingSpinner.tsx';
+import { analyzeNewsArticle } from './services/geminiService.ts';
+import { AnalysisResult } from './types.ts';
 
 const App: React.FC = () => {
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
@@ -53,7 +53,7 @@ const App: React.FC = () => {
             {isLoading && <LoadingSpinner />}
             {error && (
               <div className="text-center bg-red-900/50 border border-red-700 text-red-300 p-4 rounded-lg">
-                <p className="font-bold">Analysis Error</p>
+                <p className="font-bold">Configuration Error</p>
                 <p>{error}</p>
               </div>
             )}

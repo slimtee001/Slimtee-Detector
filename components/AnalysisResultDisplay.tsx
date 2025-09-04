@@ -1,9 +1,9 @@
 
 import React from 'react';
-import { AnalysisResult, Verdict } from '../types';
-import { CheckCircleIcon } from './icons/CheckCircleIcon';
-import { InfoIcon } from './icons/InfoIcon';
-import { XCircleIcon } from './icons/XCircleIcon';
+import { AnalysisResult, Verdict } from '../types.ts';
+import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
+import { InfoIcon } from './icons/InfoIcon.tsx';
+import { XCircleIcon } from './icons/XCircleIcon.tsx';
 
 interface AnalysisResultDisplayProps {
   result: AnalysisResult;

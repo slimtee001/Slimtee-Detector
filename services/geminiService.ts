@@ -1,10 +1,22 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult } from '../types';
+import { AnalysisResult } from '../types.ts';
 
-// According to the coding guidelines, the API key is expected to be available
-// in the process.env.API_KEY environment variable. The execution environment
-// is responsible for providing this.
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+let ai: GoogleGenAI | null = null;
+
+function getAiClient(): GoogleGenAI {
+    if (ai) {
+        return ai;
+    }
+    // The API key is expected to be available in the process.env.API_KEY environment variable.
+    // A polyfill in index.html ensures `process.env` exists, but the hosting environment
+    // must populate the API_KEY itself.
+    if (!process.env.API_KEY || typeof process.env.API_KEY !== 'string') {
+        throw new Error("The API_KEY is not configured. Please ensure the API_KEY environment variable is set on your web server or hosting environment.");
+    }
+    ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    return ai;
+}
+
 
 const analysisSchema = {
     type: Type.OBJECT,
@@ -35,6 +47,7 @@ const analysisSchema = {
 
 export async function analyzeNewsArticle(articleText: string): Promise<AnalysisResult> {
     try {
+        const client = getAiClient();
         const prompt = `Analyze the following news article for signs of being fake news or misinformation. Evaluate it based on factors like emotional language, sensationalism, lack of sources, unverifiable claims, and overall tone. Provide a structured analysis based on the schema.
         
         ARTICLE TEXT:
@@ -43,7 +56,7 @@ export async function analyzeNewsArticle(articleText: string): Promise<AnalysisR
         ---
         `;
 
-        const response = await ai.models.generateContent({
+        const response = await client.models.generateContent({
             model: 'gemini-2.5-flash',
             contents: prompt,
             config: {
@@ -62,8 +75,11 @@ export async function analyzeNewsArticle(articleText: string): Promise<AnalysisR
         return parsedResult;
 
     } catch (error) {
-        console.error("Error calling Gemini API:", error);
-        // Provide a more user-friendly error for API issues.
+        console.error("Error in analyzeNewsArticle:", error);
+        if (error instanceof Error && error.message.includes("API_KEY")) {
+             throw error; // Re-throw the specific configuration error
+        }
+        // Provide a more user-friendly error for other API issues.
         throw new Error("Analysis failed. The content might be blocked, the API may be unavailable, or there was an internal error. Please check the console and try again.");
     }
 }
