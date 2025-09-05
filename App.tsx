@@ -1,19 +1,29 @@
+import React, { useState, useCallback, useEffect } from 'react';
+import { Header } from './components/Header.jsx';
+import { NewsInput } from './components/NewsInput.jsx';
+import { AnalysisResultDisplay } from './components/AnalysisResultDisplay.jsx';
+import { LoadingSpinner } from './components/LoadingSpinner.jsx';
+import { analyzeNewsArticle, checkConfiguration } from './services/geminiService.js';
+import { ApiKeyInstructions } from './components/ApiKeyInstructions.jsx';
 
-import React, { useState, useCallback } from 'react';
-import { Header } from './components/Header.tsx';
-import { NewsInput } from './components/NewsInput.tsx';
-import { AnalysisResultDisplay } from './components/AnalysisResultDisplay.tsx';
-import { LoadingSpinner } from './components/LoadingSpinner.tsx';
-import { analyzeNewsArticle } from './services/geminiService.ts';
-import { AnalysisResult } from './types.ts';
+const App = () => {
+  const [analysisResult, setAnalysisResult] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [configError, setConfigError] = useState(null);
+  const [initialState, setInitialState] = useState(true);
 
-const App: React.FC = () => {
-  const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-  const [initialState, setInitialState] = useState<boolean>(true);
+  useEffect(() => {
+    // Check for API key configuration right after the app loads.
+    try {
+      checkConfiguration();
+    } catch (e) {
+      setConfigError(e.message);
+    }
+  }, []);
 
-  const handleAnalyze = useCallback(async (articleText: string) => {
+
+  const handleAnalyze = useCallback(async (articleText) => {
     if (!articleText.trim()) {
       setError("Please paste an article to analyze.");
       return;
@@ -39,6 +49,11 @@ const App: React.FC = () => {
     }
   }, []);
 
+  // If the API key is not configured, show a dedicated instructions screen.
+  if (configError) {
+    return <ApiKeyInstructions error={configError} />;
+  }
+
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 font-sans">
       <Header />
@@ -53,7 +68,7 @@ const App: React.FC = () => {
             {isLoading && <LoadingSpinner />}
             {error && (
               <div className="text-center bg-red-900/50 border border-red-700 text-red-300 p-4 rounded-lg">
-                <p className="font-bold">Configuration Error</p>
+                <p className="font-bold">Analysis Error</p>
                 <p>{error}</p>
               </div>
             )}

@@ -1,9 +1,8 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult } from '../types.ts';
 
-let ai: GoogleGenAI | null = null;
+let ai = null;
 
-function getAiClient(): GoogleGenAI {
+function getAiClient() {
     if (ai) {
         return ai;
     }
@@ -15,6 +14,23 @@ function getAiClient(): GoogleGenAI {
     }
     ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     return ai;
+}
+
+/**
+ * Checks if the Gemini AI client is properly configured.
+ * Throws an error if the API_KEY is missing.
+ */
+export function checkConfiguration() {
+    try {
+        getAiClient();
+    } catch (e) {
+        // Only forward the specific configuration error
+        if (e.message.includes("API_KEY")) {
+            throw e;
+        }
+        // Ignore other potential errors during check
+        console.warn("An unexpected error occurred during configuration check:", e);
+    }
 }
 
 
@@ -45,7 +61,7 @@ const analysisSchema = {
     required: ['verdict', 'confidenceScore', 'explanation', 'keyIndicators']
 };
 
-export async function analyzeNewsArticle(articleText: string): Promise<AnalysisResult> {
+export async function analyzeNewsArticle(articleText) {
     try {
         const client = getAiClient();
         const prompt = `Analyze the following news article for signs of being fake news or misinformation. Evaluate it based on factors like emotional language, sensationalism, lack of sources, unverifiable claims, and overall tone. Provide a structured analysis based on the schema.
@@ -67,7 +83,7 @@ export async function analyzeNewsArticle(articleText: string): Promise<AnalysisR
         });
         
         const jsonText = response.text.trim();
-        const parsedResult = JSON.parse(jsonText) as AnalysisResult;
+        const parsedResult = JSON.parse(jsonText);
         
         // Clamp confidence score to be between 0 and 100
         parsedResult.confidenceScore = Math.max(0, Math.min(100, parsedResult.confidenceScore));

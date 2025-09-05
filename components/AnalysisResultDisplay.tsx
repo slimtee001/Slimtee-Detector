@@ -1,15 +1,9 @@
-
 import React from 'react';
-import { AnalysisResult, Verdict } from '../types.ts';
-import { CheckCircleIcon } from './icons/CheckCircleIcon.tsx';
-import { InfoIcon } from './icons/InfoIcon.tsx';
-import { XCircleIcon } from './icons/XCircleIcon.tsx';
+import { CheckCircleIcon } from './icons/CheckCircleIcon.jsx';
+import { InfoIcon } from './icons/InfoIcon.jsx';
+import { XCircleIcon } from './icons/XCircleIcon.jsx';
 
-interface AnalysisResultDisplayProps {
-  result: AnalysisResult;
-}
-
-const VerdictIcon: React.FC<{ verdict: Verdict }> = ({ verdict }) => {
+const VerdictIcon = ({ verdict }) => {
     switch (verdict) {
         case 'Likely Real':
             return <CheckCircleIcon className="w-8 h-8 text-green-400" />;
@@ -17,20 +11,22 @@ const VerdictIcon: React.FC<{ verdict: Verdict }> = ({ verdict }) => {
             return <XCircleIcon className="w-8 h-8 text-red-400" />;
         case 'Uncertain':
             return <InfoIcon className="w-8 h-8 text-yellow-400" />;
+        default:
+            return null;
     }
 };
 
-const Gauge: React.FC<{ score: number, verdict: Verdict }> = ({ score, verdict }) => {
+const Gauge = ({ score, verdict }) => {
     const circumference = 2 * Math.PI * 52; // 2 * pi * r
     const offset = circumference - (score / 100) * circumference;
 
-    const colorClasses: Record<Verdict, { track: string, progress: string, text: string }> = {
+    const colorClasses = {
         'Likely Real': { track: 'text-green-900', progress: 'text-green-400', text: 'text-green-300' },
         'Likely Fake': { track: 'text-red-900', progress: 'text-red-400', text: 'text-red-300' },
         'Uncertain': { track: 'text-yellow-900', progress: 'text-yellow-400', text: 'text-yellow-300' },
     };
     
-    const colors = colorClasses[verdict];
+    const colors = colorClasses[verdict] || colorClasses['Uncertain'];
 
     return (
         <div className="relative flex items-center justify-center w-40 h-40">
@@ -65,10 +61,10 @@ const Gauge: React.FC<{ score: number, verdict: Verdict }> = ({ score, verdict }
 };
 
 
-export const AnalysisResultDisplay: React.FC<AnalysisResultDisplayProps> = ({ result }) => {
+export const AnalysisResultDisplay = ({ result }) => {
   const { verdict, confidenceScore, explanation, keyIndicators } = result;
   
-  const verdictClasses: Record<Verdict, string> = {
+  const verdictClasses = {
     'Likely Real': 'text-green-300',
     'Likely Fake': 'text-red-300',
     'Uncertain': 'text-yellow-300'

@@ -8,10 +8,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script>
-      // Polyfill 'process' for browser environment to avoid "process is not defined" error.
-      // The Gemini SDK expects process.env.API_KEY. In a static hosting environment,
-      // this object must be defined. The hosting environment is responsible for populating
-      // this object, for instance, by injecting a script that sets process.env.API_KEY.
+      // Polyfill 'process' for the browser environment.
+      // The Gemini SDK expects `process.env.API_KEY` to be available.
+      // In a static web server environment, you MUST configure your server to
+      // inject this value. For example, you could have your server inject a script like:
+      // <script>window.process = { env: { API_KEY: "YOUR_GEMINI_API_KEY" } };</script>
+      // before this application script loads.
       if (typeof process === 'undefined') {
         window.process = { env: {} };
       }
@@ -31,6 +33,6 @@
   </head>
   <body class="bg-slate-900">
     <div id="root"></div>
-    <script type="text/babel" data-presets="react,typescript" data-type="module" src="/index.tsx"></script>
+    <script type="text/babel" data-presets="react" data-type="module" src="/index.jsx"></script>
   </body>
 </html>

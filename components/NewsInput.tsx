@@ -1,15 +1,9 @@
-
 import React, { useState } from 'react';
 
-interface NewsInputProps {
-  onAnalyze: (text: string) => void;
-  isLoading: boolean;
-}
-
-export const NewsInput: React.FC<NewsInputProps> = ({ onAnalyze, isLoading }) => {
+export const NewsInput = ({ onAnalyze, isLoading }) => {
   const [text, setText] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
     onAnalyze(text);
   };
@@ -22,6 +16,7 @@ export const NewsInput: React.FC<NewsInputProps> = ({ onAnalyze, isLoading }) =>
         placeholder="Paste your news article here..."
         className="w-full h-64 p-4 bg-slate-800 border-2 border-slate-700 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors duration-200 text-slate-200 placeholder-slate-500 resize-y"
         disabled={isLoading}
+        aria-label="News article input"
       />
       <button
         type="submit"
